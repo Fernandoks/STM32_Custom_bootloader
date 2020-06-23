@@ -1,0 +1,107 @@
+# Created by https://www.gitignore.io/api/c
+# Edit at https://www.gitignore.io/?templates=c
+
+### C ###
+# Prerequisites
+*.d
+
+#################
+## Eclipse
+#################
+
+*.pydevproject
+.project
+.metadata
+.metadata/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.loadpath
+.bin
+.list
+log_file.txt
+.mxproject
+project.ioc
+mx.scratch
+*.tilen majerle
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PDT-specific
+.buildpath
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.bin
+*.list
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Misc
+*.map
+*.m
+*.png
+*.mk
+
+# Eclipse CDT project files
+*.cproject
+*.project
+.settings/
+
+# Debug
+build/
+debug/
+.Debug/
+Debug/
+Debug
+Debug.*
+*/Debug
+*/**/Debug
+
+# Config files
+*.cfg
+*.log
+
+# Vagrant directory
+.vagrant/
+
+# Include makefiles
+!Makefile
+*~
+
+# Libraries
+/lib
+
+
+# End of https://www.gitignore.io/api/c
+/Debug/

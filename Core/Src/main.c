@@ -26,6 +26,10 @@
 
 #include <string.h>
 #include <stdarg.h>
+#include <stdint.h>
+
+#include "bootloader.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,7 +39,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define FLASH_SECTOR_2_BASE_ADDESS 			0x08000000U
+
+#define JUMP_TO_APP(ADDRESS)  						{((void (*)()) (*(uint32_t*)ADDRESS)) ();}
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -60,10 +65,6 @@ static void MX_CRC_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
-static void printmsg(char *format,...);
-void bootloader_jump_to_user_application(void);
-
 
 /* USER CODE END PFP */
 
@@ -110,23 +111,25 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  printmsg("Bootloarder Started");
+
+  printmsg("Bootloader Started\r\n");
+
   while (1)
   {
     /* USER CODE END WHILE */
 
 	  if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0)
 	  {
-		  printmsg("Button Pressed\r\n");
-		  bootloader_jump_to_user_application();
-
+		  printmsg("Button Pressed... BL MODE\r\nPress Reset in the Board to Exit\r\n");
+		  while(1)
+		  {
+			  bootloader_uart_read_data();
+		  }
 	  }
 	  else
 	  {
-		  uint32_t currentTick = HAL_GetTick();
-		  printmsg("Tick = %d\r\n",currentTick);
+		  bootloader_jump_to_user_application();
 	  }
-
 	  HAL_Delay(1000);
 	  /* USER CODE BEGIN 3 */
   }
@@ -287,49 +290,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-static void printmsg(char *format,...)
-{
-	uint8_t strg[50];
 
-	va_list args;
-	va_start(args, format);
-	vsprintf(strg, format, args);
-	HAL_UART_Transmit(&huart2, &strg, strlen(strg), HAL_MAX_DELAY);
-	va_end(args);
-}
-
-/*
- * This functions jumps to the user code application,
- * which should be available in FLASH SECTOR 2
- *
- * The user application need to be redirected by the linker to start
- * in the flash sector 2 0x0800 8000
- * Also you need to redirect the Vector table
- * VECT_TAB_OFFSET to 0x8000
- */
-
-void bootloader_jump_to_user_application(void)
-{
-	void (*app_reset_handler)(void);
-
-	printmsg("BL Message: bootloader_jump_to_user_application\r\n");
-
-	//Configure MSP by reading the value from the Base address of the selected sector in Flash
-	//This bootloader uses (sector 2)
-	uint32_t msp_value = *(volatile uin32_t*) FLASH_SECTOR_2_BASE_ADDESS;
-	printmsg("BL Message: MSP Value: %d\r\n", msp_value);
-
-	//set MSP
-	__set_MSP(msp_value);
-
-	//Get the User Application Reset Handler
-	uint32_t userapp_resetHandlerAddress = *(volatile uin32_t*) (FLASH_SECTOR_2_BASE_ADDESS + 4);
-	app_reset_handler = (void*) userapp_resetHandlerAddress;
-	printmsg("BL Message: User Reset handler: %#x\r\n", userapp_resetHandlerAddress);
-
-	app_reset_handler();
-
-}
 
 /* USER CODE END 4 */
 
